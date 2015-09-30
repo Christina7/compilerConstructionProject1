@@ -4,6 +4,9 @@
 #include <stdlib.h>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include <map>
+#include <set>
 #include <string>
 using namespace std;
 
@@ -15,9 +18,18 @@ struct node{
 
 class Converter{
 private:
-	string alphabet;
-	string init;
-	string final;
+
+
+	vector<map<char, set<string>>> input;
+
+
+
+
+
+	string total;
+	vector<char> alphabet;
+	set<string> initial;
+	set<string> final;
 	node *head;
 	bool flag;
 

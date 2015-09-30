@@ -5,6 +5,10 @@
 using namespace std;
 
 Converter::Converter(){
+	total = "";
+	alphabet = "";
+	initial = "";
+	final = "";
 	head = NULL;
 	flag = false;
 }
@@ -58,20 +62,107 @@ void Converter::print(){
 void Converter::build(ifstream& file){
 	string item;
 	string states;
-	while (getline(file, item)){//read from file and add each number to head
-		if (item.at(0) == 'I'){
-			for (int i = 0; i < item.length(); i++){
+	set<string> numStates;
+	map<char, set<string>> inputValue;
+
+	int a;
+	while (getline(file, item)){
+		if (item.at(0) == 'I'){	//initial states line
+			for (int i = 0; i < item.length(); i++){	//loop through to find states to build string for initial
 				if (isdigit(item.at(i))){
-					states = 'a';
+					states += item.at(i);
+					a = i + 1;
+					while ((item.at(a) != '}') && (a < item.length)){ //loop through all the states an add to initial set
+						switch (item.at(a)){
+						case ',':
+							initial.insert(states);
+							states = "";
+							break;
+						case '}':
+							initial.insert(states);
+							states = "";
+							break;
+						default:
+							states += item.at(a);
+							break;
+						}
+						a++;
+					}
 				}
 			}
-			initial = item;
+			states = "";
 		}
-		
-		
-		
-		
-		insert(item, head);
+		else if (item.at(0) == 'F'){
+			for (int i = 0; i < item.length(); i++){	//loop through to find states to build string for initial
+				if (isdigit(item.at(i))){
+					states += item.at(i);
+					a = i + 1;
+					while ((item.at(a) != '}') && (a < item.length)){ //loop through all the states an add them to set
+						switch (item.at(a)){
+						case ',':
+							final.insert(states);
+							states = "";
+							break;
+						case '}':
+							final.insert(states);
+							states = "";
+							break;
+						default:
+							states += item.at(a);
+							break;
+						}
+						a++;
+					}
+				}
+			}
+			states = "";
+		}
+		else if (item.at(0) == 'T'){
+			for (int i = 0; i < item.length(); i++){	//loop through to find states to build string for total
+				if (isdigit(item.at(i))){
+					states += item.at(i);
+					a = i + 1;
+					while ((item.at(a) != '}') && (a < item.length)){ //loop through to find total
+						switch (item.at(a)){
+						case '}':
+							break;
+						default:
+							states += item.at(a);
+							break;
+						}
+						a++;
+					}
+					total = states;
+					states = "";
+				}
+			}
+		}
+		else if (item.at(0) == 'S'){
+			int i = 0;
+			int j = 0;
+			while (isalpha(item.at(i))){	//loop through to find 'State' to get to alphabet
+				i++;
+			}
+			for (i; i < item.length(); i++){
+				if (isalpha(item.at(i))){
+					alphabet[j] = (item.at(i));
+					j++;
+				}
+			}
+		}
+		else{
+			int i = 1;
+			states += item.at(0);
+			while (isdigit(item.at(i))){
+				states += item.at(i);
+			}
+			for (i; i < item.length; i++){
+				if 
+			}
+			
+
+			input[stoi(states)] = NULL;
+		}
 	}
 }
 
