@@ -23,13 +23,13 @@ private:
 	vector<map<char, set<string>>> input;
 
 
-
-
-
 	string total;
 	vector<char> alphabet;
 	set<string> initial;
 	set<string> final;
+
+
+	///may not need linked list stuff
 	node *head;
 	bool flag;
 

@@ -6,9 +6,6 @@ using namespace std;
 
 Converter::Converter(){
 	total = "";
-	alphabet = "";
-	initial = "";
-	final = "";
 	head = NULL;
 	flag = false;
 }
@@ -64,106 +61,141 @@ void Converter::build(ifstream& file){
 	string states;
 	set<string> numStates;
 	map<char, set<string>> inputValue;
-
+	int length;
 	int a;
+	int track = 0;
+
 	while (getline(file, item)){
+		length = item.length();
 		if (item.at(0) == 'I'){	//initial states line
-			for (int i = 0; i < item.length(); i++){	//loop through to find states to build string for initial
+			for (int i = 0; i < length; i++){	//loop through to find states to build string for initial
 				if (isdigit(item.at(i))){
-					states += item.at(i);
-					a = i + 1;
-					while ((item.at(a) != '}') && (a < item.length)){ //loop through all the states an add to initial set
-						switch (item.at(a)){
-						case ',':
-							initial.insert(states);
-							states = "";
-							break;
-						case '}':
-							initial.insert(states);
-							states = "";
-							break;
-						default:
-							states += item.at(a);
-							break;
-						}
-						a++;
-					}
+					a = i;
+					break;
 				}
 			}
+
+			while (a < length){ //loop through all the states an add to initial set
+				switch (item.at(a)){
+				case ',':
+					initial.insert(states);
+					states = "";
+					break;
+				case '}':
+					initial.insert(states);
+					states = "";
+					break;
+				default:
+					states += item.at(a);
+					break;
+				}
+				a++;
+			}
+		
+			
 			states = "";
+			cout << "built initial states \n";
 		}
 		else if (item.at(0) == 'F'){
-			for (int i = 0; i < item.length(); i++){	//loop through to find states to build string for initial
+			for (int i = 0; i < length; i++){	//loop through to find states to build string for initial
 				if (isdigit(item.at(i))){
-					states += item.at(i);
-					a = i + 1;
-					while ((item.at(a) != '}') && (a < item.length)){ //loop through all the states an add them to set
-						switch (item.at(a)){
-						case ',':
-							final.insert(states);
-							states = "";
-							break;
-						case '}':
-							final.insert(states);
-							states = "";
-							break;
-						default:
-							states += item.at(a);
-							break;
-						}
-						a++;
-					}
+					a = i;
+					break;
 				}
 			}
+
+			while (a < length){ //loop through all the states an add to initial set
+				switch (item.at(a)){
+				case ',':
+					initial.insert(states);
+					states = "";
+					break;
+				case '}':
+					final.insert(states);
+					states = "";
+					break;
+				default:
+					states += item.at(a);
+					break;
+				}
+				a++;
+			}
 			states = "";
+			cout << "built final states \n";
 		}
 		else if (item.at(0) == 'T'){
-			for (int i = 0; i < item.length(); i++){	//loop through to find states to build string for total
+			for (int i = 0; i < length; i++){	//loop through to find states to build string for total
 				if (isdigit(item.at(i))){
-					states += item.at(i);
-					a = i + 1;
-					while ((item.at(a) != '}') && (a < item.length)){ //loop through to find total
-						switch (item.at(a)){
-						case '}':
-							break;
-						default:
-							states += item.at(a);
-							break;
-						}
+					a = i;
+					break;
+				}
+			}
+
+			while ((a < length) && (isdigit(item.at(a)))){ //loop through to find total
+						
+						states += item.at(a);
+					
 						a++;
 					}
 					total = states;
 					states = "";
-				}
-			}
+				
+			
+			cout << "built total states \n";
 		}
 		else if (item.at(0) == 'S'){
 			int i = 0;
-			int j = 0;
+			//int j = 0;
 			while (isalpha(item.at(i))){	//loop through to find 'State' to get to alphabet
 				i++;
 			}
-			for (i; i < item.length(); i++){
+			for (i; i < length; i++){
 				if (isalpha(item.at(i))){
-					alphabet[j] = (item.at(i));
-					j++;
+					alphabet.push_back(item.at(i));
 				}
 			}
+			cout << "built alphabet \n";
 		}
 		else{
-			int i = 1;
-			states += item.at(0);
+			int i = 0;
+			string current = "";
 			while (isdigit(item.at(i))){
 				states += item.at(i);
-			}
-			for (i; i < item.length; i++){
-				if 
+				i++;
 			}
 			
-
-			input[stoi(states)] = NULL;
+			for (int k = 0; k < int(alphabet.size()); k++){
+				while (i < length){	
+					if (isdigit(item.at(i))){
+						current += item.at(i);
+					}
+					else if (item.at(i) == ',') {
+						numStates.insert(current);
+						current = "";
+					}
+					else if (item.at(i) == '}'){
+						if ((track == k) && (current != "")){
+						//if (current != ""){
+							numStates.insert(current);
+							current = "";
+						}
+						track++;
+						i++;
+						break;
+					}
+					else{
+					}
+					i++;
+				}
+				inputValue.insert(pair<char, set<string>>(alphabet[k], numStates));
+				input.push_back(inputValue);
+				numStates.clear();
+			}
+			
 		}
 	}
+
+	cout << "built all\n";
 }
 
 node*& Converter::getHead(){
