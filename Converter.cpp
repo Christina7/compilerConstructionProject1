@@ -174,12 +174,12 @@ void Converter::build(ifstream& file){
 						current = "";
 					}
 					else if (item.at(i) == '}'){
-						if ((track == k) && (current != "")){
-						//if (current != ""){
+						//if ((track == k) && (current != "")){
+						if (current != ""){
 							numStates.insert(current);
 							current = "";
 						}
-						track++;
+						//track++;
 						i++;
 						break;
 					}
@@ -187,11 +187,16 @@ void Converter::build(ifstream& file){
 					}
 					i++;
 				}
-				inputValue.insert(pair<char, set<string>>(alphabet[k], numStates));
-				input.push_back(inputValue);
+				if (!numStates.empty()){
+					inputValue.insert(pair<char, set<string>>(alphabet[k], numStates));
+					
+				}
+				//inputValue.clear();
 				numStates.clear();
 			}
-			
+			input.push_back(inputValue);
+			inputValue.clear();
+
 		}
 	}
 
