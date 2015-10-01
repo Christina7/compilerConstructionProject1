@@ -1,3 +1,10 @@
+/*
+*				Christina Schoenrogge
+*				EECS 665 Project 1
+*				NFA to DFA Converter
+*		
+*/
+
 #include <iostream>
 #include "Converter.h"
 using namespace std;
