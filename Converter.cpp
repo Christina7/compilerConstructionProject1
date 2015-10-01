@@ -38,35 +38,194 @@ bool Converter::isEmpty(){
 }
 
 
-//prints current Converter
-void Converter::print(){
-	node *temp = head;	//new node pointing to head
-	if (temp == NULL){
-		cout << "Empty List \n";
-	}
-	else{
-		while (temp->next != NULL){		//while next node isn't null print data
-			cout << temp->data << " ";
-			temp = temp->next;
+
+
+set<string> Converter::move(set<string> s, char c){
+	set<string> state;
+	set<string> returnState;
+
+	for (set<string>::iterator it = s.begin(); it != s.end(); ++it){//for each state given
+		if (input[stoi(*it) - 1].at[c] != NULL){	//see if it's in the map add the states it transitions to given c
+			state.insert(input[stoi(*it) - 1].at[c].begin(), input[stoi(*it) - 1].at[c].end());  //
+			if (state != returnState){	//add it if 
+				returnState.insert(state.begin(), state.end());
+				
+			}
+			state.clear();
 		}
-		cout << temp->data << endl;	//print last node
+	}
+	return returnState;
+}
+//it = string
+
+
+//prints current Converter
+void Converter::printSet(set<string> s){
+	for (set<string>::iterator it = s.begin(); it != s.end(); ++it){
+		cout << *it << " ";
 	}
 }
 
+
+
 //finds eclosure of given state		NOTE: state is the state wanted 
 set<string> Converter::findEClosure(string state, vector<map<char, set<string>>> v){
+	set<string> eclosure1;
+	set<string> eclosure2;
+	set<string> getRest;
+	
+	eclosure1.insert(state);
+	eclosure1.insert(v[stoi(state) - 1].at('E').begin(), v[stoi(state) - 1].at('E').end());
+	
+	while (eclosure1 != eclosure2){
+		eclosure2 = eclosure1;
+
+		for (set<string>::iterator it = eclosure1.begin(); it != eclosure1.end(); ++it){
+			getRest = findEClosureHelper(*it,input);
+			eclosure1.insert(getRest.begin(), getRest.end());
+		}
+
+	}
+
+	return eclosure1;
+}
+
+set<string> Converter::findEClosureHelper(string state, vector<map<char, set<string>>> v){
 	set<string> eclosure;
 	eclosure.insert(state);
-	eclosure.insert(v[stoi(state) - 1].find('E')->second.begin(), v[stoi(state) - 1].find('E')->second.end());
+	//need to check if null 
+	eclosure.insert(v[stoi(state) - 1].at('E').begin(), v[stoi(state) - 1].at('E').end()); 
 	return eclosure;
 }
 
 void Converter::convertNFA2DFA(){
-	//just use this-> whatever
-	vector<set<string>> marks;
+	vector<set<string>> markList; // marks and the set they hold
+	vector<map<char, string>> markTransitions;
+	map<char, string> statemap;
+	set<string>  mark;
+	set<string>  Emark;
+	set<string> temp;
+	int counter = 1;
+	int whichMark = 1;
+	bool isInList = false;
 
-	cout << "E-closure(I0) = {";// findEClosure(initial)
+	string stateName = "";
+
+	mark = findEClosure(initial, input);
+	markList.push_back(mark);
+
+	cout << "E-closure(I0) = {";
+	printSet(mark);
+	cout << "} = 1 \n";// findEClosure(initial)
+
+	mark.clear();
+
+	do{
+		// find all the marks 
+
+
+		cout << "\nMark " << whichMark << "\n";
+
+
+		for (int i = 0; i < int(alphabet.size() - 1) ; i++){
+
+
+			mark = move(markList[whichMark - 1], alphabet[i]); //find the set that a transitions to
+			if (!mark.empty()){
+
+				cout << "{";
+				printSet(markList[whichMark - 1]);
+				cout << "} --" << alphabet[i] << "--> {";
+				printSet(mark);
+				cout << "}\n";
+				for (set<string>::iterator it = mark.begin(); it != mark.end(); ++it){ // for each entry in that set
+					temp = findEClosure(*it, input);								  // find the eclosure 
+					Emark.insert(temp.begin(), temp.end());
+					temp.clear();
+
+				}
+
+				cout << "E-closure{";
+				printSet(mark);
+				cout << "} = {";
+				printSet(Emark);
+				cout << "} = ";
+
+
+				for (int j = 0; j < int(markList.size()); j++){	//see if its in the list
+					if (Emark == markList[j]){
+						isInList = true;
+						stateName = j + 1;
+						break;
+					}
+				}
+				if (!isInList){	//if not in list add it, increment counter
+					markList.push_back(Emark);
+					Emark.clear();
+					counter++;
+					stateName = to_string(counter);
+				}
+
+				cout << stateName << endl;
+
+				statemap.insert(pair<char, string>(alphabet[i], stateName));
+			}
+		}
+		//add to final
+		markTransitions.push_back(statemap);
+		statemap.clear();
+		whichMark++;
+		cout << endl << endl;
+
+	} while (markList.size() != counter);
+
+
+	cout << "Initial State: {";
+	printSet(findInitial(markList));
+	cout << "} \nFinal States: {";
+	printSet(findFinal(markList));
+	cout << "} \nState\t";
+	for (int g = 0; g < int(alphabet.size() - 1); g++){
+		cout << alphabet[g] << "\t";
+	}
+	cout << endl;
+
+	for (int b = 0; b < int(markTransitions.size()); b++){
+		cout << b + 1;
+		for (int h = 0; h < int(alphabet.size() - 1); h++){
+			cout << "\t{" << markTransitions[b].at(alphabet[h]) << "}\t";
+		}
+	}
 	
+	
+}
+
+set<string> Converter::findInitial(vector<set<string>> v){
+	set<string> returnSet;
+	for (int i = 0; i < int(v.size()); i++){
+		if (v[i].find(initial) != v[i].end()){
+			returnSet.insert(to_string(i+1));
+		}
+	}
+
+	return returnSet;
+}
+
+set<string> Converter::findFinal(vector<set<string>> v){
+	set<string> returnSet;
+
+	for (int i = 0; i < int(v.size()); i++){
+		for (set<string>::iterator itA = v[i].begin(); itA != v[i].end(); ++itA){
+			for (set<string>::iterator itB = final.begin(); itB != final.end(); ++itB){
+				if (*itA == *itB){
+					returnSet.insert(to_string(i + 1));
+				}
+			}
+		}
+	}
+
+
+	return returnSet;
 }
 
 
@@ -93,11 +252,11 @@ void Converter::build(ifstream& file){
 			while (a < length){ //loop through all the states an add to initial set
 				switch (item.at(a)){
 				case ',':
-					initial.insert(states); 
+					initial = states; 
 					states = "";
 					break;
 				case '}':
-					initial.insert(states);
+					initial = states;
 					states = "";
 					break;
 				default:
@@ -122,7 +281,7 @@ void Converter::build(ifstream& file){
 			while (a < length){ //loop through all the states an add to initial set
 				switch (item.at(a)){
 				case ',':
-					initial.insert(states);
+					final.insert(states);
 					states = "";
 					break;
 				case '}':
@@ -189,12 +348,11 @@ void Converter::build(ifstream& file){
 						current = "";
 					}
 					else if (item.at(i) == '}'){
-						//if ((track == k) && (current != "")){
 						if (current != ""){
 							numStates.insert(current);
 							current = "";
 						}
-						//track++;
+						
 						i++;
 						break;
 					}
@@ -215,7 +373,7 @@ void Converter::build(ifstream& file){
 		}
 	}
 
-	cout << "built all\n";
+	cout << "built all\n\n\n\n";
 }
 
 node*& Converter::getHead(){

@@ -10,7 +10,9 @@ int main(){
 	file.open("input.txt");
 
 	a.build(file);
+	a.convertNFA2DFA();
 
+	cout << endl << endl;
 	cout << "stop";
 
 	return 0;

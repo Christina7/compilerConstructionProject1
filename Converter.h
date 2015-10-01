@@ -23,10 +23,10 @@ private:
 	vector<map<char, set<string>>> input;
 
 
-	string total;
-	vector<char> alphabet;
-	set<string> initial;
-	set<string> final;
+	string total;	//total number of states
+	vector<char> alphabet;	//letters used for transitions
+	string initial;	 //one initial state
+	set<string> final;	//multiple final states
 
 
 	///may not need linked list stuff
@@ -37,10 +37,15 @@ public:
 	Converter();
 	void insert(string x, node *&L);
 	bool isEmpty();
-	void print();
-
+	
+	set<string> move(set<string> s, char c);
+	void printSet(set<string> s);
 	set<string> findEClosure(string state, vector<map<char, set<string>>> v);
+	set<string> findEClosureHelper(string state, vector<map<char, set<string>>> v);
 	void convertNFA2DFA();
+	set<string> findInitial(vector<set<string>> v);
+	set<string> findFinal(vector<set<string>> v);
+
 	void build(ifstream& file);
 
 
