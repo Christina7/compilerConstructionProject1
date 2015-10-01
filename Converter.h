@@ -38,7 +38,12 @@ public:
 	void insert(string x, node *&L);
 	bool isEmpty();
 	void print();
+
+	set<string> findEClosure(string state, vector<map<char, set<string>>> v);
+	void convertNFA2DFA();
 	void build(ifstream& file);
+
+
 	node*& getHead();
 };
 

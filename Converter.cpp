@@ -53,14 +53,29 @@ void Converter::print(){
 	}
 }
 
+//finds eclosure of given state		NOTE: state is the state wanted 
+set<string> Converter::findEClosure(string state, vector<map<char, set<string>>> v){
+	set<string> eclosure;
+	eclosure.insert(state);
+	eclosure.insert(v[stoi(state) - 1].find('E')->second.begin(), v[stoi(state) - 1].find('E')->second.end());
+	return eclosure;
+}
+
+void Converter::convertNFA2DFA(){
+	//just use this-> whatever
+	vector<set<string>> marks;
+
+	cout << "E-closure(I0) = {";// findEClosure(initial)
+	
+}
 
 
-//builds initial Converter 
+//builds/fills in initial Converter class
 void Converter::build(ifstream& file){
-	string item;
-	string states;
-	set<string> numStates;
-	map<char, set<string>> inputValue;
+	string item; //string line
+	string states; //holding alphanumeric
+	set<string> numStates;	//states to go to map value
+	map<char, set<string>> inputValue;	//maps alphabet to states
 	int length;
 	int a;
 	int track = 0;
@@ -78,7 +93,7 @@ void Converter::build(ifstream& file){
 			while (a < length){ //loop through all the states an add to initial set
 				switch (item.at(a)){
 				case ',':
-					initial.insert(states);
+					initial.insert(states); 
 					states = "";
 					break;
 				case '}':
