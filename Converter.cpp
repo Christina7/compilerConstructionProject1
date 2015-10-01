@@ -45,8 +45,8 @@ set<string> Converter::move(set<string> s, char c){
 	set<string> returnState;
 
 	for (set<string>::iterator it = s.begin(); it != s.end(); ++it){//for each state given
-		if (input[stoi(*it) - 1].at[c] != NULL){	//see if it's in the map add the states it transitions to given c
-			state.insert(input[stoi(*it) - 1].at[c].begin(), input[stoi(*it) - 1].at[c].end());  //
+		if (input[stoi(*it) - 1].count(c) != 0){	//see if it's in the map add the states it transitions to given c
+			state.insert(input[stoi(*it) - 1].at(c).begin(), input[stoi(*it) - 1].at(c).end());  //vector[map<char, set<string>>] input;
 			if (state != returnState){	//add it if 
 				returnState.insert(state.begin(), state.end());
 				
@@ -75,8 +75,9 @@ set<string> Converter::findEClosure(string state, vector<map<char, set<string>>>
 	set<string> getRest;
 	
 	eclosure1.insert(state);
-	eclosure1.insert(v[stoi(state) - 1].at('E').begin(), v[stoi(state) - 1].at('E').end());
-	
+	if (v[stoi(state) - 1].count('E') != 0){
+		eclosure1.insert(v[stoi(state) - 1].at('E').begin(), v[stoi(state) - 1].at('E').end());
+	}
 	while (eclosure1 != eclosure2){
 		eclosure2 = eclosure1;
 
@@ -93,8 +94,9 @@ set<string> Converter::findEClosure(string state, vector<map<char, set<string>>>
 set<string> Converter::findEClosureHelper(string state, vector<map<char, set<string>>> v){
 	set<string> eclosure;
 	eclosure.insert(state);
-	//need to check if null 
-	eclosure.insert(v[stoi(state) - 1].at('E').begin(), v[stoi(state) - 1].at('E').end()); 
+	if (v[stoi(state) - 1].count('E') != 0){
+		eclosure.insert(v[stoi(state) - 1].at('E').begin(), v[stoi(state) - 1].at('E').end());
+	}
 	return eclosure;
 }
 
