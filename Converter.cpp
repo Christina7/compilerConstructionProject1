@@ -1,3 +1,10 @@
+/*
+*				Christina Schoenrogge
+*				EECS 665 Project 1
+*				NFA to DFA Converter
+*
+*/
+
 #include <iostream>
 #include <string>
 #include <ctype.h>
@@ -6,38 +13,8 @@ using namespace std;
 
 Converter::Converter(){
 	total = "";
-	head = NULL;
-	flag = false;
+	initial = "";
 }
-
-//adds state to end of list
-void Converter::insert(string x, node *&L){
-	if (L == NULL){	//if current node is NULL adds new node with data
-		L = new node;
-		L->data = x;
-		L->next = NULL;
-	} else if (L->next == NULL){
-		L->next = new node;
-		L->next->next = NULL;
-		L->next->data = x;
-	} else {	// current node is not last node then move on to next node recursively
-		insert(x, L->next);
-	}
-		
-	
-}
-
-//checks if Converter is empty
-bool Converter::isEmpty(){
-	if (head == NULL){
-		return true;
-	}
-	else{
-		return false;
-	}
-}
-
-
 
 
 set<string> Converter::move(set<string> s, char c){
@@ -56,8 +33,6 @@ set<string> Converter::move(set<string> s, char c){
 	}
 	return returnState;
 }
-//it = string
-
 
 //prints current Converter
 void Converter::printSet(set<string> s){
@@ -65,8 +40,6 @@ void Converter::printSet(set<string> s){
 		cout << *it << " ";
 	}
 }
-
-
 
 //finds eclosure of given state		NOTE: state is the state wanted 
 set<string> Converter::findEClosure(string state, vector<map<char, set<string>>> v){
@@ -179,7 +152,7 @@ void Converter::convertNFA2DFA(){
 		whichMark++;
 		cout << endl << endl;
 
-	} while (markList.size() != counter);
+	} while (whichMark != counter);
 
 
 	cout << "Initial State: {";
@@ -192,14 +165,19 @@ void Converter::convertNFA2DFA(){
 	}
 	cout << endl;
 
-	for (int b = 0; b < int(markTransitions.size()); b++){
+	for (int b = 0; b < int(markTransitions.size() - 1); b++){
 		cout << b + 1;
 		for (int h = 0; h < int(alphabet.size() - 1); h++){
-			cout << "\t{" << markTransitions[b].at(alphabet[h]) << "}\t";
+			cout << "\t{";
+			if (markTransitions[b].count(alphabet[h]) != 0){
+				cout << markTransitions[b].at(alphabet[h]) << "}\t";
+			}
+			else{
+				cout << "}\t";
+			}
 		}
+		cout << endl;
 	}
-	
-	
 }
 
 set<string> Converter::findInitial(vector<set<string>> v){
@@ -267,8 +245,6 @@ void Converter::build(ifstream& file){
 				}
 				a++;
 			}
-		
-			
 			states = "";
 			cout << "built initial states \n";
 		}
@@ -378,6 +354,3 @@ void Converter::build(ifstream& file){
 	cout << "built all\n\n\n\n";
 }
 
-node*& Converter::getHead(){
-	return head;
-}
