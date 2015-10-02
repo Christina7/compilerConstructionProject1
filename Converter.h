@@ -27,7 +27,6 @@ private:
 	set<string> final;	//multiple final states
 
 
-
 public:
 	Converter();
 	set<string> move(set<string> s, char c);

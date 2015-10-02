@@ -84,7 +84,7 @@ void Converter::convertNFA2DFA(){
 	int whichMark = 1;
 	bool isInList = false;
 
-	string stateName = "";
+	int stateName;
 
 	mark = findEClosure(initial, input);
 	markList.push_back(mark);
@@ -97,15 +97,11 @@ void Converter::convertNFA2DFA(){
 
 	do{
 		// find all the marks 
-
-
 		cout << "\nMark " << whichMark << "\n";
-
 
 		for (int i = 0; i < int(alphabet.size() - 1) ; i++){
 
-
-			mark = move(markList[whichMark - 1], alphabet[i]); //find the set that a transitions to
+			mark = move(markList[whichMark - 1], alphabet[i]); //find the set that alphabet transitions to
 			if (!mark.empty()){
 
 				cout << "{";
@@ -138,12 +134,13 @@ void Converter::convertNFA2DFA(){
 					markList.push_back(Emark);
 					Emark.clear();
 					counter++;
-					stateName = to_string(counter);
+					stateName = counter;
 				}
 
 				cout << stateName << endl;
 
-				statemap.insert(pair<char, string>(alphabet[i], stateName));
+				statemap.insert(pair<char, string>(alphabet[i], to_string(stateName)));
+				isInList = false;
 			}
 		}
 		//add to final
@@ -152,7 +149,7 @@ void Converter::convertNFA2DFA(){
 		whichMark++;
 		cout << endl << endl;
 
-	} while (whichMark != counter);
+	} while (whichMark <= counter);
 
 
 	cout << "Initial State: {";
@@ -165,15 +162,15 @@ void Converter::convertNFA2DFA(){
 	}
 	cout << endl;
 
-	for (int b = 0; b < int(markTransitions.size() - 1); b++){
+	for (int b = 0; b < int(markTransitions.size()); b++){
 		cout << b + 1;
 		for (int h = 0; h < int(alphabet.size() - 1); h++){
 			cout << "\t{";
 			if (markTransitions[b].count(alphabet[h]) != 0){
-				cout << markTransitions[b].at(alphabet[h]) << "}\t";
+				cout << markTransitions[b].at(alphabet[h]) << "}";
 			}
 			else{
-				cout << "}\t";
+				cout << "}";
 			}
 		}
 		cout << endl;
